@@ -65,8 +65,11 @@ DB_PASSWORD=sua_senha
 php artisan migrate
 php artisan serve
 
-# 4. Teste a API
+# 4. Para desenvolvimento local, teste a API
 curl http://localhost:8000/api/tarefas
+
+# Para produção, use:
+curl https://todolistapp-main-sawgdc.laravel.cloud/api/tarefas
 ```
 
 ## 📚 Arquivos de Documentação
@@ -97,7 +100,8 @@ curl http://localhost:8000/api/tarefas
 **Erro 404 na API:**
 - Confirme se o servidor está rodando (`php artisan serve`)
 - Verifique as rotas em [API.md](API.md)
-- Confirme a base URL: `http://localhost:8000/api`
+- Base URL produção: `https://todolistapp-main-sawgdc.laravel.cloud/api`  
+- Base URL desenvolvimento: `http://localhost:8000/api`
 
 ### Onde Encontrar Informações
 

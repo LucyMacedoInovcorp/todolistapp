@@ -184,38 +184,44 @@ npm run build
 #### Ambiente de Desenvolvimento
 
 ```bash
-# Iniciar servidor de desenvolvimento
+# Para desenvolvimento local
 php artisan serve
+# O servidor local estará disponível em: http://localhost:8000
 
-# O servidor estará disponível em: http://localhost:8000
+# Para produção (Laravel Cloud)
+# A aplicação está disponível em: https://todolistapp-main-sawgdc.laravel.cloud
 ```
 
 Teste se a aplicação está funcionando:
 ```bash
-# Testar interface web
-curl http://localhost:8000
+# Testar interface web em produção
+curl https://todolistapp-main-sawgdc.laravel.cloud
 
-# Testar endpoint da API
-curl http://localhost:8000/api/tarefas
+# Testar endpoint da API em produção
+curl https://todolistapp-main-sawgdc.laravel.cloud/api/tarefas
+
+# Para desenvolvimento local:
+# curl http://localhost:8000
+# curl http://localhost:8000/api/tarefas
 ```
 
-#### Ambiente de Produção
+#### URLs da Aplicação
 
-Quando a aplicação estiver em produção, substitua as URLs pelos endereços reais:
+**🌐 Produção (Laravel Cloud):**
 
 ```bash
-# Exemplo para produção (substitua pela sua URL)
+# Produção já configurada no Laravel Cloud
 # Testar interface web
-curl https://sua-aplicacao.com
+curl https://todolistapp-main-sawgdc.laravel.cloud
 
 # Testar endpoint da API  
-curl https://sua-aplicacao.com/api/tarefas
+curl https://todolistapp-main-sawgdc.laravel.cloud/api/tarefas
 ```
 
-**📝 Nota**: Após o deploy, atualize esta seção com:
-- ✏️ URL real da aplicação
-- ✏️ Instruções específicas do servidor de produção
-- ✏️ Configurações de SSL/HTTPS se aplicável
+**✅ Deploy Concluído**: 
+- ✅ URL real: https://todolistapp-main-sawgdc.laravel.cloud
+- ✅ Laravel Cloud gerencia toda a infraestrutura
+- ✅ SSL/HTTPS configurado automaticamente
 
 ### 8. Executar Testes (Opcional)
 
@@ -237,7 +243,7 @@ Se você está configurando para produção:
 ```env
 APP_ENV=production
 APP_DEBUG=false
-APP_URL=https://sua-aplicacao.com  # ← Altere aqui após deploy
+APP_URL=https://todolistapp-main-sawgdc.laravel.cloud
 LOG_LEVEL=error
 ```
 
@@ -270,7 +276,7 @@ composer install --optimize-autoloader --no-dev
 # Adicione no .env de produção
 SESSION_SECURE_COOKIE=true
 SESSION_SAME_SITE=strict
-SANCTUM_STATEFUL_DOMAINS=sua-aplicacao.com
+SANCTUM_STATEFUL_DOMAINS=todolistapp-main-sawgdc.laravel.cloud
 ```
 
 ### Configuração de Servidor Web
@@ -352,9 +358,9 @@ php artisan serve --port=8080
 
 ## 🔍 Verificação Final
 
-### Checklist para Desenvolvimento
+### Checklist para Desenvolvimento Local
 
-Execute esta checklist para confirmar que tudo está funcionando:
+Execute esta checklist para confirmar que tudo está funcionando localmente:
 
 - [ ] ✅ Servidor inicia sem erros (`php artisan serve`)
 - [ ] ✅ Página inicial carrega (`http://localhost:8000`)
@@ -362,30 +368,40 @@ Execute esta checklist para confirmar que tudo está funcionando:
 - [ ] ✅ Testes passam (`./vendor/bin/pest`)
 - [ ] ✅ Migrações executadas (`php artisan migrate:status`)
 - [ ] ✅ Assets compilados (`npm run dev` funciona)
+
+### Checklist para Produção (Laravel Cloud)
+
+Verificação da aplicação em produção:
+
+- [x] ✅ Aplicação deployada com sucesso
+- [x] ✅ Interface web carrega (`https://todolistapp-main-sawgdc.laravel.cloud`)
+- [x] ✅ API responde (`https://todolistapp-main-sawgdc.laravel.cloud/api/tarefas`)
+- [x] ✅ HTTPS habilitado e funcionando
+- [x] ✅ Base de dados configurada
+- [x] ✅ Assets compilados e servidos
 - [ ] ✅ Interface Vue.js carrega corretamente
 
-### Checklist para Produção
+### URLs Atuais
 
-Após o deploy, verifique:
-
-- [ ] 🌐 Domínio/URL configurado corretamente
-- [ ] 🔒 SSL/HTTPS funcionando
-- [ ] 📊 Banco de produção configurado e migrado
+**🌐 Produção:** https://todolistapp-main-sawgdc.laravel.cloud  
+**� API:** https://todolistapp-main-sawgdc.laravel.cloud/api  
+**� Desenvolvimento:** http://localhost:8000 (quando executando localmente)
 - [ ] 🎨 Assets compilados e servidos corretamente
 - [ ] 🔧 Caches otimizados (config, routes, views)
 - [ ] 📝 Logs configurados adequadamente
 - [ ] 🧪 Testes executados no ambiente de produção
 - [ ] 🚀 Performance e tempo de resposta aceitáveis
 
-**📋 Template para atualizar após deploy:**
+**� Deploy Concluído!**
+
 ```bash
-# Substitua pelas URLs reais:
+# URLs Atualizadas:
 # Desenvolvimento: http://localhost:8000
-# Produção: https://sua-aplicacao.com
+# Produção: https://todolistapp-main-sawgdc.laravel.cloud
 
 # Testar em produção:
-curl https://sua-aplicacao.com/api/tarefas
-curl https://sua-aplicacao.com/api/tarefas/1
+curl https://todolistapp-main-sawgdc.laravel.cloud/api/tarefas
+curl https://todolistapp-main-sawgdc.laravel.cloud/api/tarefas/1
 ```
 
 ## 📞 Suporte

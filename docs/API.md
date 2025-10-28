@@ -2,7 +2,7 @@
 
 ## Informações Gerais
 
-- **Base URL**: `http://localhost:8000/api`
+- **Base URL**: `https://todolistapp-main-sawgdc.laravel.cloud/api`
 - **Formato**: JSON
 - **Autenticação**: Não requerida (para esta versão)
 - **Content-Type**: `application/json`
@@ -30,16 +30,16 @@ Lista todas as tarefas com opções de filtro.
 
 ```bash
 # Listar todas as tarefas
-curl -X GET "http://localhost:8000/api/tarefas"
+curl -X GET "https://todolistapp-main-sawgdc.laravel.cloud/api/tarefas"
 
 # Filtrar tarefas pendentes de alta prioridade
-curl -X GET "http://localhost:8000/api/tarefas?estado=pendente&prioridade=alta"
+curl -X GET "https://todolistapp-main-sawgdc.laravel.cloud/api/tarefas?estado=pendente&prioridade=alta"
 
 # Filtrar tarefas por data de vencimento
-curl -X GET "http://localhost:8000/api/tarefas?data_vencimento=2025-10-25"
+curl -X GET "https://todolistapp-main-sawgdc.laravel.cloud/api/tarefas?data_vencimento=2025-10-25"
 
 # Listar tarefas vencidas
-curl -X GET "http://localhost:8000/api/tarefas?vencidas=true"
+curl -X GET "https://todolistapp-main-sawgdc.laravel.cloud/api/tarefas?vencidas=true"
 ```
 
 #### Resposta de Sucesso (200)
@@ -93,7 +93,7 @@ Cria uma nova tarefa.
 #### Exemplo de Requisição
 
 ```bash
-curl -X POST "http://localhost:8000/api/tarefas" \
+curl -X POST "https://todolistapp-main-sawgdc.laravel.cloud/api/tarefas" \
   -H "Content-Type: application/json" \
   -d '{
     "titulo": "Nova tarefa",
@@ -153,7 +153,7 @@ Retorna os detalhes de uma tarefa específica.
 #### Exemplo de Requisição
 
 ```bash
-curl -X GET "http://localhost:8000/api/tarefas/1"
+curl -X GET "https://todolistapp-main-sawgdc.laravel.cloud/api/tarefas/1"
 ```
 
 #### Resposta de Sucesso (200)
@@ -210,7 +210,7 @@ Atualiza uma tarefa existente.
 #### Exemplo de Requisição
 
 ```bash
-curl -X PUT "http://localhost:8000/api/tarefas/1" \
+curl -X PUT "https://todolistapp-main-sawgdc.laravel.cloud/api/tarefas/1" \
   -H "Content-Type: application/json" \
   -d '{
     "titulo": "Estudar Laravel Avançado",
@@ -253,7 +253,7 @@ Alterna o status da tarefa entre concluída e pendente.
 #### Exemplo de Requisição
 
 ```bash
-curl -X PATCH "http://localhost:8000/api/tarefas/1/toggle"
+curl -X PATCH "https://todolistapp-main-sawgdc.laravel.cloud/api/tarefas/1/toggle"
 ```
 
 #### Resposta de Sucesso (200)
@@ -290,7 +290,7 @@ Remove uma tarefa permanentemente.
 #### Exemplo de Requisição
 
 ```bash
-curl -X DELETE "http://localhost:8000/api/tarefas/1"
+curl -X DELETE "https://todolistapp-main-sawgdc.laravel.cloud/api/tarefas/1"
 ```
 
 #### Resposta de Sucesso (200)
@@ -336,7 +336,7 @@ curl -X DELETE "http://localhost:8000/api/tarefas/1"
 
 ```bash
 # 1. Criar uma nova tarefa
-curl -X POST "http://localhost:8000/api/tarefas" \
+curl -X POST "https://todolistapp-main-sawgdc.laravel.cloud/api/tarefas" \
   -H "Content-Type: application/json" \
   -d '{
     "titulo": "Implementar API",
@@ -346,31 +346,31 @@ curl -X POST "http://localhost:8000/api/tarefas" \
   }'
 
 # 2. Listar tarefas pendentes de alta prioridade
-curl -X GET "http://localhost:8000/api/tarefas?estado=pendente&prioridade=alta"
+curl -X GET "https://todolistapp-main-sawgdc.laravel.cloud/api/tarefas?estado=pendente&prioridade=alta"
 
 # 3. Marcar como concluída
-curl -X PATCH "http://localhost:8000/api/tarefas/1/toggle"
+curl -X PATCH "https://todolistapp-main-sawgdc.laravel.cloud/api/tarefas/1/toggle"
 
 # 4. Editar descrição
-curl -X PUT "http://localhost:8000/api/tarefas/1" \
+curl -X PUT "https://todolistapp-main-sawgdc.laravel.cloud/api/tarefas/1" \
   -H "Content-Type: application/json" \
   -d '{
     "descricao": "API RESTful implementada com sucesso"
   }'
 
 # 5. Visualizar detalhes
-curl -X GET "http://localhost:8000/api/tarefas/1"
+curl -X GET "https://todolistapp-main-sawgdc.laravel.cloud/api/tarefas/1"
 ```
 
 ### Cenários Comuns de Filtros
 
 ```bash
 # Listar tarefas vencidas não concluídas
-curl -X GET "http://localhost:8000/api/tarefas?vencidas=true"
+curl -X GET "https://todolistapp-main-sawgdc.laravel.cloud/api/tarefas?vencidas=true"
 
 # Tarefas de hoje
-curl -X GET "http://localhost:8000/api/tarefas?data_vencimento=2025-10-21"
+curl -X GET "https://todolistapp-main-sawgdc.laravel.cloud/api/tarefas?data_vencimento=2025-10-21"
 
 # Tarefas concluídas de prioridade baixa
-curl -X GET "http://localhost:8000/api/tarefas?estado=concluida&prioridade=baixa"
+curl -X GET "https://todolistapp-main-sawgdc.laravel.cloud/api/tarefas?estado=concluida&prioridade=baixa"
 ```

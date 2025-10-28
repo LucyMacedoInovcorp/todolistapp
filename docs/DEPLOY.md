@@ -2,6 +2,13 @@
 
 Este guia orienta sobre o processo de deploy da aplicação TodoList para produção.
 
+## 🎉 Deploy Realizado com Laravel Cloud
+
+**✅ Status:** Deploy concluído com sucesso!  
+**🌐 URL de Produção:** https://todolistapp-main-sawgdc.laravel.cloud/  
+**📅 Data do Deploy:** Outubro 27, 2025  
+**🏗️ Plataforma:** Laravel Cloud
+
 ## 📋 Pré-Deploy Checklist
 
 Antes de fazer o deploy, certifique-se de que:
@@ -23,7 +30,7 @@ Crie/atualize o `.env` com configurações de produção:
 APP_NAME="TodoList"
 APP_ENV=production
 APP_DEBUG=false
-APP_URL=https://sua-aplicacao.com  # ← ATUALIZAR AQUI
+APP_URL=https://todolistapp-main-sawgdc.laravel.cloud
 APP_KEY=base64:sua_chave_de_producao
 
 # Banco de Dados
@@ -98,15 +105,16 @@ Certifique-se de que o `.htaccess` em `public/` está correto:
 Configuração para Nginx:
 
 ```nginx
-server {
-    listen 80;
-    server_name sua-aplicacao.com;  # ← ATUALIZAR AQUI
-    return 301 https://$server_name$request_uri;
-}
+## 📝 Nota sobre Laravel Cloud
 
-server {
-    listen 443 ssl http2;
-    server_name sua-aplicacao.com;  # ← ATUALIZAR AQUI
+**O deploy foi realizado com Laravel Cloud, que gerencia automaticamente:**
+- ✅ Configuração do servidor web (Nginx)
+- ✅ Certificados SSL/HTTPS
+- ✅ Otimizações de performance
+- ✅ Monitoramento e logs
+- ✅ Backup automático
+
+**Configuração manual não necessária** - O Laravel Cloud cuida de toda a infraestrutura!
     root /caminho/para/todolist/public;
 
     ssl_certificate /caminho/para/certificado.crt;
@@ -154,7 +162,7 @@ server {
 A aplicação estará disponível em `http://localhost:8000`
 
 # Por:
-A aplicação está disponível em `https://sua-aplicacao.com`
+A aplicação está disponível em `https://todolistapp-main-sawgdc.laravel.cloud`
 ```
 
 ### 2. Atualizar docs/INSTALACAO.md
@@ -165,8 +173,8 @@ curl http://localhost:8000
 curl http://localhost:8000/api/tarefas
 
 # Por:
-curl https://sua-aplicacao.com
-curl https://sua-aplicacao.com/api/tarefas
+curl https://todolistapp-main-sawgdc.laravel.cloud
+curl https://todolistapp-main-sawgdc.laravel.cloud/api/tarefas
 ```
 
 ### 3. Atualizar docs/API.md
@@ -181,7 +189,7 @@ http://localhost:8000/api
 # Por:
 ### Base URL
 ```
-https://sua-aplicacao.com/api
+https://todolistapp-main-sawgdc.laravel.cloud/api
 ```
 ```
 
@@ -191,15 +199,15 @@ https://sua-aplicacao.com/api
 
 ```bash
 # 1. Testar se o site carrega
-curl -I https://sua-aplicacao.com
+curl -I https://todolistapp-main-sawgdc.laravel.cloud
 # Deve retornar: HTTP/1.1 200 OK
 
 # 2. Testar API básica
-curl https://sua-aplicacao.com/api/tarefas
+curl https://todolistapp-main-sawgdc.laravel.cloud/api/tarefas
 # Deve retornar: [] ou lista de tarefas
 
 # 3. Testar criação de tarefa
-curl -X POST https://sua-aplicacao.com/api/tarefas \
+curl -X POST https://todolistapp-main-sawgdc.laravel.cloud/api/tarefas \
   -H "Content-Type: application/json" \
   -d '{"titulo":"Teste Deploy","prioridade":"media"}'
 ```
@@ -208,15 +216,15 @@ curl -X POST https://sua-aplicacao.com/api/tarefas \
 
 ```bash
 # 1. Verificar HTTPS
-curl -I https://sua-aplicacao.com
+curl -I https://todolistapp-main-sawgdc.laravel.cloud
 # Deve ter headers de segurança
 
 # 2. Verificar redirecionamento HTTP → HTTPS
-curl -I http://sua-aplicacao.com
+curl -I http://todolistapp-main-sawgdc.laravel.cloud
 # Deve retornar: 301 Moved Permanently
 
 # 3. Verificar se .env não está acessível
-curl https://sua-aplicacao.com/.env
+curl https://todolistapp-main-sawgdc.laravel.cloud/.env
 # Deve retornar: 404 ou 403
 ```
 
@@ -288,7 +296,7 @@ php artisan view:cache
 echo "✅ Deploy concluído!"
 
 # Testar se está funcionando
-curl -f https://sua-aplicacao.com/api/tarefas > /dev/null && echo "✅ API funcionando" || echo "❌ API com problema"
+curl -f https://todolistapp-main-sawgdc.laravel.cloud/api/tarefas > /dev/null && echo "✅ API funcionando" || echo "❌ API com problema"
 ```
 
 ## 📋 Template de Checklist Pós-Deploy
@@ -307,8 +315,8 @@ Copie e cole este checklist após cada deploy:
 - [ ] Permissões corretas
 
 ### ✅ Checklist Funcional  
-- [ ] Site carrega (https://sua-aplicacao.com)
-- [ ] API responde (https://sua-aplicacao.com/api/tarefas)
+- [ ] Site carrega (https://todolistapp-main-sawgdc.laravel.cloud)
+- [ ] API responde (https://todolistapp-main-sawgdc.laravel.cloud/api/tarefas)
 - [ ] Criação de tarefa funciona
 - [ ] Listagem funciona
 - [ ] Filtros funcionam
@@ -321,11 +329,10 @@ Copie e cole este checklist após cada deploy:
 - [ ] Logs configurados
 
 ### 🔗 URLs Atualizadas
-- **Site**: https://sua-aplicacao.com
-- **API**: https://sua-aplicacao.com/api
+- **Site**: https://todolistapp-main-sawgdc.laravel.cloud
+- **API**: https://todolistapp-main-sawgdc.laravel.cloud/api
 - **Docs**: Atualizadas com novas URLs
 ```
 
 ---
 
-**🎉 Parabéns pelo deploy!** Lembre-se de atualizar toda a documentação com as URLs reais após o deploy.

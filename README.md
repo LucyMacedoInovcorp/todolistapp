@@ -138,7 +138,7 @@ Uma aplicação web simples e intuitiva para gestão de tarefas (lista "To-Do"),
    php artisan serve
    ```
 
-   A aplicação estará disponível em `http://localhost:8000`
+   A aplicação está disponível em `https://todolistapp-main-sawgdc.laravel.cloud`
    - **Frontend**: Interface web interativa
    - **API**: Endpoints REST em `/api`
 
@@ -146,7 +146,7 @@ Uma aplicação web simples e intuitiva para gestão de tarefas (lista "To-Do"),
 
 ### Base URL
 ```
-http://localhost:8000/api
+https://todolistapp-main-sawgdc.laravel.cloud/api
 ```
 
 ### Endpoints Principais
@@ -164,7 +164,7 @@ GET /api/tarefas
 
 **Exemplo:**
 ```bash
-curl "http://localhost:8000/api/tarefas?estado=pendente&prioridade=alta"
+curl "https://todolistapp-main-sawgdc.laravel.cloud/api/tarefas?estado=pendente&prioridade=alta"
 ```
 
 #### ➕ Criar Tarefa
