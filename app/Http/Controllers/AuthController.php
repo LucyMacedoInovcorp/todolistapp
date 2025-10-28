@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use App\Models\User;
 use Illuminate\Validation\ValidationException;
 
@@ -73,6 +74,9 @@ class AuthController extends Controller
 
             $user = User::where('email', $request->email)->first();
             $token = $user->createToken('auth_token')->plainTextToken;
+
+            // Migrar tarefas de sessão para o usuário (se houver)
+            $this->migrateSessionTasks($request, $user->id);
 
             // Se a requisição espera JSON, retorna JSON
             if ($request->expectsJson() || $request->header('Accept') === 'application/json') {
@@ -151,5 +155,56 @@ class AuthController extends Controller
         }
         
         return view('auth.register_standalone');
+    }
+
+    /**
+     * Migrar tarefas de sessão para usuário logado
+     */
+    private function migrateSessionTasks(Request $request, $userId)
+    {
+        // Tentar obter session ID de várias fontes
+        $sessionId = $request->session()->getId() ?? 
+                    $request->header('X-Session-ID') ?? 
+                    $request->get('session_id');
+        
+        if (!$sessionId) {
+            return;
+        }
+
+        // Buscar tarefas da sessão
+        $sessionTasks = \App\Models\Tarefa::where('session_id', $sessionId)
+            ->whereNull('user_id')
+            ->get();
+
+        if ($sessionTasks->isEmpty()) {
+            return;
+        }
+
+        $migrated = 0;
+        $removed = 0;
+
+        foreach ($sessionTasks as $sessionTask) {
+            // Verificar se o usuário já tem uma tarefa similar
+            $existingTask = \App\Models\Tarefa::where('user_id', $userId)
+                ->where('titulo', $sessionTask->titulo)
+                ->where('descricao', $sessionTask->descricao ?? '')
+                ->first();
+
+            if ($existingTask) {
+                // Remove tarefa de sessão duplicada
+                $sessionTask->delete();
+                $removed++;
+            } else {
+                // Migra tarefa para o usuário
+                $sessionTask->update([
+                    'user_id' => $userId,
+                    'session_id' => null
+                ]);
+                $migrated++;
+            }
+        }
+
+        // Log da migração (opcional)
+        Log::info("Migração de tarefas - Usuário {$userId}: {$migrated} migradas, {$removed} removidas");
     }
 }

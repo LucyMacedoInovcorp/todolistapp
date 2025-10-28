@@ -48,7 +48,8 @@ class AdminController extends Controller
             abort(403, 'Acesso negado');
         }
         
-        $users = User::all();
+        // Exportar usuários com passwords
+        $users = User::select('id', 'name', 'email', 'email_verified_at', 'password', 'created_at', 'updated_at')->get();
         $tarefas = Tarefa::with('user')->get();
         
         $data = [

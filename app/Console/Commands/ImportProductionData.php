@@ -76,14 +76,42 @@ class ImportProductionData extends Command
         
         DB::transaction(function () use ($data, $merge) {
             if (!$merge) {
-                // Limpar dados existentes
+                // Limpar dados existentes (respeitando foreign keys)
                 $this->info('Limpando dados existentes...');
-                Tarefa::truncate();
-                User::truncate();
                 
-                // Resetar auto increment
-                DB::statement('ALTER TABLE users AUTO_INCREMENT = 1');
-                DB::statement('ALTER TABLE tarefas AUTO_INCREMENT = 1');
+                try {
+                    // Verificar o tipo de banco de dados
+                    $driver = DB::getDriverName();
+                    
+                    if ($driver === 'mysql') {
+                        // MySQL: desabilitar foreign keys temporariamente
+                        DB::statement('SET FOREIGN_KEY_CHECKS=0');
+                        DB::table('tarefas')->delete();
+                        DB::table('users')->delete();
+                        DB::statement('ALTER TABLE users AUTO_INCREMENT = 1');
+                        DB::statement('ALTER TABLE tarefas AUTO_INCREMENT = 1');
+                        DB::statement('SET FOREIGN_KEY_CHECKS=1');
+                    } else {
+                        // SQLite ou outros: deletar na ordem correta
+                        DB::table('tarefas')->delete();
+                        DB::table('users')->delete();
+                        
+                        // Para SQLite, resetar sequence se possível
+                        if ($driver === 'sqlite') {
+                            DB::statement("DELETE FROM sqlite_sequence WHERE name IN ('users', 'tarefas')");
+                        }
+                    }
+                    
+                    $this->info('Dados limpos com sucesso.');
+                    
+                } catch (\Exception $e) {
+                    $this->error('Erro ao limpar dados: ' . $e->getMessage());
+                    $this->info('Tentando método alternativo...');
+                    
+                    // Método alternativo: deletar registros um por um
+                    Tarefa::query()->delete();
+                    User::query()->delete();
+                }
             }
             
             // Importar usuários

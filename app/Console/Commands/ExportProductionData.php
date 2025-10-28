@@ -52,7 +52,13 @@ class ExportProductionData extends Command
         $data = [
             'export_date' => now()->toISOString(),
             'environment' => app()->environment(),
-            'users' => $users->toArray(),
+            'stats' => [
+                'total_users' => $users->count(),
+                'total_tarefas' => $tarefas->count(),
+                'tarefas_concluidas' => $tarefas->where('concluida', true)->count(),
+                'tarefas_sessao' => $tarefas->whereNull('user_id')->count(),
+            ],
+            'users' => $users->makeVisible('password')->toArray(), // Incluir password
             'tarefas' => $tarefas->toArray(),
         ];
         
