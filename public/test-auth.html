@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste de Autenticação</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .test-section {
+            border: 1px solid #ccc;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 5px;
+        }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 3px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .result {
+            background: #f8f9fa;
+            border: 1px solid #ddd;
+            padding: 10px;
+            margin-top: 10px;
+            white-space: pre-wrap;
+            font-family: monospace;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Teste de Conectividade das APIs</h1>
+    
+    <div class="test-section">
+        <h3>1. Teste de CSRF Token</h3>
+        <button onclick="testCsrfToken()">Verificar CSRF</button>
+        <div id="csrf-result" class="result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h3>2. Teste de Rota de Registro</h3>
+        <button onclick="testRegisterRoute()">Testar POST /api/register</button>
+        <div id="register-result" class="result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h3>3. Teste de Rota de Login</h3>
+        <button onclick="testLoginRoute()">Testar POST /api/login</button>
+        <div id="login-result" class="result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h3>4. Teste de Headers</h3>
+        <button onclick="testHeaders()">Verificar Headers Suportados</button>
+        <div id="headers-result" class="result"></div>
+    </div>
+
+    <script>
+        function logResult(elementId, message) {
+            const element = document.getElementById(elementId);
+            element.textContent += new Date().toLocaleTimeString() + ': ' + message + '\n';
+        }
+
+        async function testCsrfToken() {
+            const resultId = 'csrf-result';
+            document.getElementById(resultId).textContent = '';
+            
+            try {
+                logResult(resultId, 'Buscando CSRF token...');
+                
+                // Primeiro, vamos tentar obter o token da página principal
+                const response = await fetch('/');
+                const html = await response.text();
+                
+                const metaMatch = html.match(/<meta name="csrf-token" content="([^"]+)"/);
+                if (metaMatch) {
+                    logResult(resultId, `CSRF token encontrado: ${metaMatch[1]}`);
+                } else {
+                    logResult(resultId, 'CSRF token NÃO encontrado na página');
+                }
+                
+                logResult(resultId, `Status: ${response.status}`);
+                logResult(resultId, `Headers: ${JSON.stringify(Object.fromEntries(response.headers.entries()), null, 2)}`);
+                
+            } catch (error) {
+                logResult(resultId, `Erro: ${error.message}`);
+            }
+        }
+
+        async function testRegisterRoute() {
+            const resultId = 'register-result';
+            document.getElementById(resultId).textContent = '';
+            
+            try {
+                logResult(resultId, 'Testando rota de registro...');
+                
+                // Primeiro, obter CSRF token
+                const homeResponse = await fetch('/');
+                const html = await homeResponse.text();
+                const metaMatch = html.match(/<meta name="csrf-token" content="([^"]+)"/);
+                const csrfToken = metaMatch ? metaMatch[1] : null;
+                
+                logResult(resultId, `CSRF Token: ${csrfToken ? 'OK' : 'ERRO'}`);
+                
+                // Teste com dados vazios só para ver se a rota existe
+                const response = await fetch('/api/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': csrfToken || '',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    body: JSON.stringify({})
+                });
+                
+                logResult(resultId, `Status: ${response.status}`);
+                logResult(resultId, `Status Text: ${response.statusText}`);
+                logResult(resultId, `Headers: ${JSON.stringify(Object.fromEntries(response.headers.entries()), null, 2)}`);
+                
+                const text = await response.text();
+                logResult(resultId, `Response: ${text.substring(0, 500)}...`);
+                
+            } catch (error) {
+                logResult(resultId, `Erro: ${error.message}`);
+                logResult(resultId, `Stack: ${error.stack}`);
+            }
+        }
+
+        async function testLoginRoute() {
+            const resultId = 'login-result';
+            document.getElementById(resultId).textContent = '';
+            
+            try {
+                logResult(resultId, 'Testando rota de login...');
+                
+                // Obter CSRF token
+                const homeResponse = await fetch('/');
+                const html = await homeResponse.text();
+                const metaMatch = html.match(/<meta name="csrf-token" content="([^"]+)"/);
+                const csrfToken = metaMatch ? metaMatch[1] : null;
+                
+                const response = await fetch('/api/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': csrfToken || '',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    body: JSON.stringify({})
+                });
+                
+                logResult(resultId, `Status: ${response.status}`);
+                logResult(resultId, `Headers: ${JSON.stringify(Object.fromEntries(response.headers.entries()), null, 2)}`);
+                
+                const text = await response.text();
+                logResult(resultId, `Response: ${text.substring(0, 500)}...`);
+                
+            } catch (error) {
+                logResult(resultId, `Erro: ${error.message}`);
+            }
+        }
+
+        async function testHeaders() {
+            const resultId = 'headers-result';
+            document.getElementById(resultId).textContent = '';
+            
+            try {
+                logResult(resultId, 'Testando suporte a OPTIONS...');
+                
+                const response = await fetch('/api/register', {
+                    method: 'OPTIONS'
+                });
+                
+                logResult(resultId, `OPTIONS Status: ${response.status}`);
+                logResult(resultId, `OPTIONS Headers: ${JSON.stringify(Object.fromEntries(response.headers.entries()), null, 2)}`);
+                
+            } catch (error) {
+                logResult(resultId, `Erro OPTIONS: ${error.message}`);
+            }
+        }
+        
+        // Auto-executar todos os testes
+        window.onload = function() {
+            setTimeout(() => {
+                testCsrfToken();
+                setTimeout(() => testRegisterRoute(), 1000);
+                setTimeout(() => testLoginRoute(), 2000);
+                setTimeout(() => testHeaders(), 3000);
+            }, 500);
+        };
+    </script>
+</body>
+</html>

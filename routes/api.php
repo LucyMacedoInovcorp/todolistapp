@@ -5,12 +5,11 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\TarefaController;
 use App\Http\Controllers\AuthController;
 
-// Rotas de autenticação
-Route::post('/register', [AuthController::class, 'register']);
-Route::post('/login', [AuthController::class, 'login']);
-
 // Rotas que funcionam tanto autenticadas quanto por sessão
 Route::middleware('web')->group(function () {
+    // Rotas de autenticação
+    Route::post('/register', [AuthController::class, 'register']);
+    Route::post('/login', [AuthController::class, 'login']);
     Route::get('/tarefas', [TarefaController::class, 'index']);
     Route::post('/tarefas', [TarefaController::class, 'store']);
     Route::get('/tarefas/{tarefa}', [TarefaController::class, 'show']);

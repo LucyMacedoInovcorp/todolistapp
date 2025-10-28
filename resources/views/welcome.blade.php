@@ -41,6 +41,19 @@
             </nav>
         </header>
 
+        <!-- Mensagens de Sucesso/Erro -->
+        @if(session('success'))
+            <div class="alert alert-success" role="alert" style="background: #d4edda; border: 1px solid #c3e6cb; color: #155724; padding: 1rem; margin: 1rem; border-radius: 0.5rem; text-align: center;">
+                {{ session('success') }}
+            </div>
+        @endif
+
+        @if(session('error'))
+            <div class="alert alert-error" role="alert" style="background: #f8d7da; border: 1px solid #f5c6cb; color: #721c24; padding: 1rem; margin: 1rem; border-radius: 0.5rem; text-align: center;">
+                {{ session('error') }}
+            </div>
+        @endif
+
         <!-- Conteúdo -->
         <main id="main-content" role="main" tabindex="-1">
             @yield('content')

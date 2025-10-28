@@ -146,21 +146,105 @@
 
                 try {
                     const formData = new FormData(form);
-                    const response = await fetch('/api/register', {
+                    
+                    // Tentar diferentes URLs para debug
+                    let registerUrl = '/api/register';
+                    
+                    console.log('Base URL:', window.location.origin);
+                    console.log('Current URL:', window.location.href);
+                    console.log('Attempting register to:', registerUrl);
+                    
+                    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+                    console.log('CSRF Token found:', !!csrfToken);
+                    
+                    if (!csrfToken) {
+                        throw new Error('CSRF token não encontrado');
+                    }
+                    
+                    const requestBody = {
+                        name: formData.get('name'),
+                        email: formData.get('email'),
+                        password: formData.get('password'),
+                        password_confirmation: formData.get('password_confirmation')
+                    };
+                    
+                    console.log('Request body:', requestBody);
+                    
+                    const response = await fetch(registerUrl, {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                            'Accept': 'application/json',
+                            'X-CSRF-TOKEN': csrfToken,
+                            'X-Requested-With': 'XMLHttpRequest'
                         },
-                        body: JSON.stringify({
-                            name: formData.get('name'),
-                            email: formData.get('email'),
-                            password: formData.get('password'),
-                            password_confirmation: formData.get('password_confirmation')
-                        })
+                        body: JSON.stringify(requestBody)
                     });
+                    
+                    console.log('Response status:', response.status);
+                    console.log('Response ok:', response.ok);
+                    console.log('Response headers:', Object.fromEntries(response.headers.entries()));
+                    
+                    if (!response.ok) {
+                        console.log('Request failed, trying fallback method...');
+                        
+                        // Fallback: usar FormData diretamente
+                        const fallbackResponse = await fetch(registerUrl, {
+                            method: 'POST',
+                            headers: {
+                                'X-CSRF-TOKEN': csrfToken,
+                                'X-Requested-With': 'XMLHttpRequest'
+                            },
+                            body: formData
+                        });
+                        
+                        console.log('Fallback response status:', fallbackResponse.status);
+                        console.log('Fallback response ok:', fallbackResponse.ok);
+                        
+                        if (!fallbackResponse.ok) {
+                            const errorText = await fallbackResponse.text();
+                            console.error('Fallback error text:', errorText);
+                            
+                            try {
+                                const errorJson = JSON.parse(errorText);
+                                if (errorJson.errors) {
+                                    Object.keys(errorJson.errors).forEach(field => {
+                                        const errorElement = document.getElementById(field + '-error');
+                                        if (errorElement) {
+                                            errorElement.textContent = errorJson.errors[field][0];
+                                            errorElement.style.display = 'block';
+                                        }
+                                    });
+                                    return;
+                                }
+                            } catch (parseError) {
+                                console.log('Could not parse error as JSON:', parseError);
+                            }
+                            
+                            throw new Error(`Erro de conexão (${fallbackResponse.status}): ${errorText}`);
+                        }
+                        
+                        const result = await fallbackResponse.json();
+                        
+                        if (result.token) {
+                            localStorage.setItem('auth_token', result.token);
+                            localStorage.setItem('user', JSON.stringify(result.user));
+                            
+                            const successMsg = document.getElementById('success-message');
+                            successMsg.textContent = result.message || 'Conta criada com sucesso!';
+                            successMsg.style.display = 'block';
+                            
+                            setTimeout(() => {
+                                window.location.href = '/';
+                            }, 1000);
+                        } else {
+                            throw new Error('Token não recebido do servidor');
+                        }
+                        return;
+                    }
 
                     const data = await response.json();
+                    console.log('Response data:', data);
 
                     if (response.ok) {
                         // Registro bem-sucedido
@@ -192,8 +276,22 @@
                         }
                     }
                 } catch (error) {
+                    console.error('Register error:', error);
+                    console.error('Error stack:', error.stack);
+                    
                     const generalError = document.getElementById('general-error');
-                    generalError.textContent = 'Erro de conexão. Tente novamente.';
+                    
+                    let errorMessage = 'Erro de conexão. Tente novamente.';
+                    
+                    if (error.message.includes('Failed to fetch')) {
+                        errorMessage = 'Erro de rede. Verifique sua conexão.';
+                    } else if (error.message.includes('CSRF token')) {
+                        errorMessage = 'Erro de segurança. Recarregue a página.';
+                    } else if (error.message.includes('Token não recebido')) {
+                        errorMessage = error.message;
+                    }
+                    
+                    generalError.textContent = errorMessage;
                     generalError.style.display = 'block';
                 } finally {
                     // Restaurar botão

@@ -99,19 +99,47 @@
 
                 try {
                     const formData = new FormData(form);
-                    const response = await fetch('/api/login', {
+                    
+                    // Tentar diferentes URLs para debug
+                    let loginUrl = '/api/login';
+                    
+                    console.log('Base URL:', window.location.origin);
+                    console.log('Current URL:', window.location.href);
+                    console.log('Attempting login to:', loginUrl);
+                    
+                    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+                    console.log('CSRF Token found:', !!csrfToken);
+                    
+                    if (!csrfToken) {
+                        throw new Error('CSRF token não encontrado');
+                    }
+                    
+                    const requestBody = {
+                        email: formData.get('email'),
+                        password: formData.get('password')
+                    };
+                    
+                    console.log('Request body:', requestBody);
+                    
+                    const response = await fetch(loginUrl, {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                            'Accept': 'application/json',
+                            'X-CSRF-TOKEN': csrfToken,
+                            'X-Requested-With': 'XMLHttpRequest'
                         },
-                        body: JSON.stringify({
-                            email: formData.get('email'),
-                            password: formData.get('password')
-                        })
+                        body: JSON.stringify(requestBody)
                     });
 
+                    console.log('Response status:', response.status);
+                    
+                    if (!response.ok && response.status >= 500) {
+                        throw new Error(`Erro do servidor (${response.status}): ${response.statusText}`);
+                    }
+
                     const data = await response.json();
+                    console.log('Response data:', data);
 
                     if (response.ok) {
                         // Login bem-sucedido
@@ -146,8 +174,69 @@
                         }
                     }
                 } catch (error) {
+                    console.error('Login error (JSON method):', error);
+                    
+                    // Fallback: tentar com form-data
+                    try {
+                        console.log('Trying fallback with form-data...');
+                        const formData = new FormData(form);
+                        
+                        const response = await fetch('/api/login', {
+                            method: 'POST',
+                            headers: {
+                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                                'Accept': 'application/json',
+                                'X-Requested-With': 'XMLHttpRequest'
+                            },
+                            body: formData
+                        });
+                        
+                        console.log('Fallback response status:', response.status);
+                        
+                        if (!response.ok && response.status >= 500) {
+                            throw new Error(`Erro do servidor (${response.status}): ${response.statusText}`);
+                        }
+
+                        const data = await response.json();
+                        console.log('Fallback response data:', data);
+
+                        if (response.ok) {
+                            // Login bem-sucedido
+                            console.log('Login successful with fallback:', data);
+                            localStorage.setItem('auth_token', data.token);
+                            localStorage.setItem('user', JSON.stringify(data.user));
+                            
+                            const successMsg = document.getElementById('success-message');
+                            successMsg.textContent = data.message || 'Login realizado com sucesso!';
+                            successMsg.style.display = 'block';
+                            
+                            // Redirecionar após 1.5 segundos para garantir que o localStorage seja atualizado
+                            setTimeout(() => {
+                                console.log('Redirecting to home...');
+                                // Tentar atualizar a navbar na página de destino
+                                window.location.href = '/?logged_in=1';
+                            }, 1500);
+                            return; // Sucesso com fallback
+                        } else {
+                            // Processar erros do fallback
+                            if (data.errors) {
+                                Object.keys(data.errors).forEach(field => {
+                                    const errorElement = document.getElementById(field + '-error');
+                                    if (errorElement) {
+                                        errorElement.textContent = data.errors[field][0];
+                                        errorElement.style.display = 'block';
+                                    }
+                                });
+                                return;
+                            }
+                        }
+                    } catch (fallbackError) {
+                        console.error('Fallback error:', fallbackError);
+                    }
+                    
+                    // Se chegou até aqui, todos os métodos falharam
                     const generalError = document.getElementById('general-error');
-                    generalError.textContent = 'Erro de conexão. Tente novamente.';
+                    generalError.textContent = `Erro de conexão: ${error.message || 'Verifique sua conexão e tente novamente.'}`;
                     generalError.style.display = 'block';
                 } finally {
                     // Restaurar botão
