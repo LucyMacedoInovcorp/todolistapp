@@ -12,22 +12,22 @@ use App\Models\Tarefa;
 // ========== TESTES DE LISTAGEM BÁSICA ==========
 
 test('pode listar todas as tarefas', function () {
-    // Arrange - Criar algumas tarefas de teste
-    Tarefa::create([
+    // Arrange - Criar algumas tarefas de teste para a sessão atual
+    $this->createTarefaForSession([
         'titulo' => 'Tarefa 1',
         'descricao' => 'Primeira tarefa',
         'concluida' => false,
         'prioridade' => 'alta'
     ]);
 
-    Tarefa::create([
+    $this->createTarefaForSession([
         'titulo' => 'Tarefa 2',
         'descricao' => 'Segunda tarefa',
         'concluida' => true,
         'prioridade' => 'media'
     ]);
 
-    Tarefa::create([
+    $this->createTarefaForSession([
         'titulo' => 'Tarefa 3',
         'descricao' => 'Terceira tarefa',
         'concluida' => false,
@@ -74,10 +74,10 @@ test('retorna lista vazia quando não há tarefas', function () {
 
 test('pode filtrar tarefas pendentes', function () {
     // Criar tarefas com diferentes estados
-    Tarefa::create(['titulo' => 'Tarefa Pendente 1', 'concluida' => false]);
-    Tarefa::create(['titulo' => 'Tarefa Pendente 2', 'concluida' => false]);
-    Tarefa::create(['titulo' => 'Tarefa Concluída 1', 'concluida' => true]);
-    Tarefa::create(['titulo' => 'Tarefa Concluída 2', 'concluida' => true]);
+    $this->createTarefaForSession(['titulo' => 'Tarefa Pendente 1', 'concluida' => false]);
+    $this->createTarefaForSession(['titulo' => 'Tarefa Pendente 2', 'concluida' => false]);
+    $this->createTarefaForSession(['titulo' => 'Tarefa Concluída 1', 'concluida' => true]);
+    $this->createTarefaForSession(['titulo' => 'Tarefa Concluída 2', 'concluida' => true]);
 
     // Filtrar apenas pendentes
     $response = $this->getJson('/api/tarefas?estado=pendente');
@@ -93,10 +93,10 @@ test('pode filtrar tarefas pendentes', function () {
 
 test('pode filtrar tarefas concluídas', function () {
     // Criar tarefas com diferentes estados
-    Tarefa::create(['titulo' => 'Tarefa Pendente 1', 'concluida' => false]);
-    Tarefa::create(['titulo' => 'Tarefa Pendente 2', 'concluida' => false]);
-    Tarefa::create(['titulo' => 'Tarefa Concluída 1', 'concluida' => true]);
-    Tarefa::create(['titulo' => 'Tarefa Concluída 2', 'concluida' => true]);
+    $this->createTarefaForSession(['titulo' => 'Tarefa Pendente 1', 'concluida' => false]);
+    $this->createTarefaForSession(['titulo' => 'Tarefa Pendente 2', 'concluida' => false]);
+    $this->createTarefaForSession(['titulo' => 'Tarefa Concluída 1', 'concluida' => true]);
+    $this->createTarefaForSession(['titulo' => 'Tarefa Concluída 2', 'concluida' => true]);
 
     // Filtrar apenas concluídas
     $response = $this->getJson('/api/tarefas?estado=concluida');
@@ -112,9 +112,9 @@ test('pode filtrar tarefas concluídas', function () {
 
 test('pode filtrar todas as tarefas explicitamente', function () {
     // Criar tarefas mistas
-    Tarefa::create(['titulo' => 'Tarefa 1', 'concluida' => false]);
-    Tarefa::create(['titulo' => 'Tarefa 2', 'concluida' => true]);
-    Tarefa::create(['titulo' => 'Tarefa 3', 'concluida' => false]);
+    $this->createTarefaForSession(['titulo' => 'Tarefa 1', 'concluida' => false]);
+    $this->createTarefaForSession(['titulo' => 'Tarefa 2', 'concluida' => true]);
+    $this->createTarefaForSession(['titulo' => 'Tarefa 3', 'concluida' => false]);
 
     // Filtrar explicitamente por "todas"
     $response = $this->getJson('/api/tarefas?estado=todas');
@@ -127,10 +127,10 @@ test('pode filtrar todas as tarefas explicitamente', function () {
 
 test('pode filtrar tarefas por prioridade alta', function () {
     // Criar tarefas com diferentes prioridades
-    Tarefa::create(['titulo' => 'Tarefa Alta 1', 'prioridade' => 'alta']);
-    Tarefa::create(['titulo' => 'Tarefa Alta 2', 'prioridade' => 'alta']);
-    Tarefa::create(['titulo' => 'Tarefa Média', 'prioridade' => 'media']);
-    Tarefa::create(['titulo' => 'Tarefa Baixa', 'prioridade' => 'baixa']);
+    $this->createTarefaForSession(['titulo' => 'Tarefa Alta 1', 'prioridade' => 'alta']);
+    $this->createTarefaForSession(['titulo' => 'Tarefa Alta 2', 'prioridade' => 'alta']);
+    $this->createTarefaForSession(['titulo' => 'Tarefa Média', 'prioridade' => 'media']);
+    $this->createTarefaForSession(['titulo' => 'Tarefa Baixa', 'prioridade' => 'baixa']);
 
     $response = $this->getJson('/api/tarefas?prioridade=alta');
 
@@ -144,10 +144,10 @@ test('pode filtrar tarefas por prioridade alta', function () {
 });
 
 test('pode filtrar tarefas por prioridade média', function () {
-    Tarefa::create(['titulo' => 'Tarefa Alta', 'prioridade' => 'alta']);
-    Tarefa::create(['titulo' => 'Tarefa Média 1', 'prioridade' => 'media']);
-    Tarefa::create(['titulo' => 'Tarefa Média 2', 'prioridade' => 'media']);
-    Tarefa::create(['titulo' => 'Tarefa Baixa', 'prioridade' => 'baixa']);
+    $this->createTarefaForSession(['titulo' => 'Tarefa Alta', 'prioridade' => 'alta']);
+    $this->createTarefaForSession(['titulo' => 'Tarefa Média 1', 'prioridade' => 'media']);
+    $this->createTarefaForSession(['titulo' => 'Tarefa Média 2', 'prioridade' => 'media']);
+    $this->createTarefaForSession(['titulo' => 'Tarefa Baixa', 'prioridade' => 'baixa']);
 
     $response = $this->getJson('/api/tarefas?prioridade=media');
 
@@ -161,10 +161,10 @@ test('pode filtrar tarefas por prioridade média', function () {
 });
 
 test('pode filtrar tarefas por prioridade baixa', function () {
-    Tarefa::create(['titulo' => 'Tarefa Alta', 'prioridade' => 'alta']);
-    Tarefa::create(['titulo' => 'Tarefa Média', 'prioridade' => 'media']);
-    Tarefa::create(['titulo' => 'Tarefa Baixa 1', 'prioridade' => 'baixa']);
-    Tarefa::create(['titulo' => 'Tarefa Baixa 2', 'prioridade' => 'baixa']);
+    $this->createTarefaForSession(['titulo' => 'Tarefa Alta', 'prioridade' => 'alta']);
+    $this->createTarefaForSession(['titulo' => 'Tarefa Média', 'prioridade' => 'media']);
+    $this->createTarefaForSession(['titulo' => 'Tarefa Baixa 1', 'prioridade' => 'baixa']);
+    $this->createTarefaForSession(['titulo' => 'Tarefa Baixa 2', 'prioridade' => 'baixa']);
 
     $response = $this->getJson('/api/tarefas?prioridade=baixa');
 
@@ -181,43 +181,44 @@ test('pode filtrar tarefas por prioridade baixa', function () {
 
 test('pode filtrar tarefas por data de vencimento específica', function () {
     // Criar tarefas com diferentes datas
-    Tarefa::create([
+    $dataEspecifica = now()->addDays(2)->format('Y-m-d');
+    $this->createTarefaForSession([
         'titulo' => 'Tarefa Hoje 1',
-        'data_vencimento' => '2025-10-17'
+        'data_vencimento' => $dataEspecifica
     ]);
-    Tarefa::create([
+    $this->createTarefaForSession([
         'titulo' => 'Tarefa Hoje 2',
-        'data_vencimento' => '2025-10-17'
+        'data_vencimento' => $dataEspecifica
     ]);
-    Tarefa::create([
+    $this->createTarefaForSession([
         'titulo' => 'Tarefa Amanhã',
-        'data_vencimento' => '2025-10-18'
+        'data_vencimento' => now()->addDays(3)->format('Y-m-d')
     ]);
 
-    $response = $this->getJson('/api/tarefas?data_vencimento=2025-10-17');
+    $response = $this->getJson('/api/tarefas?data_vencimento=' . $dataEspecifica);
 
     $response->assertStatus(200)
         ->assertJsonCount(2);
 
     $tarefas = $response->json();
     foreach ($tarefas as $tarefa) {
-        expect($tarefa['data_vencimento'])->toContain('2025-10-17');
+        expect($tarefa['data_vencimento'])->toContain($dataEspecifica);
     }
 });
 
 test('pode filtrar tarefas vencidas', function () {
     // Criar tarefas com datas passadas e futuras
-    Tarefa::create([
+    $this->createTarefaForSession([
         'titulo' => 'Tarefa Vencida 1',
-        'data_vencimento' => '2025-10-15' // Passado
+        'data_vencimento' => now()->subDays(5)->format('Y-m-d') // 5 dias atrás
     ]);
-    Tarefa::create([
-        'titulo' => 'Tarefa Vencida 2',
-        'data_vencimento' => '2025-10-16' // Passado
+    $this->createTarefaForSession([
+        'titulo' => 'Tarefa Vencida 2', 
+        'data_vencimento' => now()->subDays(3)->format('Y-m-d') // 3 dias atrás
     ]);
-    Tarefa::create([
+    $this->createTarefaForSession([
         'titulo' => 'Tarefa Futura',
-        'data_vencimento' => '2025-10-25' // Futuro - 4 dias à frente
+        'data_vencimento' => now()->addDays(5)->format('Y-m-d') // 5 dias no futuro
     ]);
 
     $response = $this->getJson('/api/tarefas?vencidas=true');
@@ -230,10 +231,10 @@ test('pode filtrar tarefas vencidas', function () {
 
 test('pode combinar filtros de estado e prioridade', function () {
     // Criar tarefas variadas
-    Tarefa::create(['titulo' => 'Target', 'concluida' => false, 'prioridade' => 'alta']);
-    Tarefa::create(['titulo' => 'Não Target 1', 'concluida' => true, 'prioridade' => 'alta']);
-    Tarefa::create(['titulo' => 'Não Target 2', 'concluida' => false, 'prioridade' => 'media']);
-    Tarefa::create(['titulo' => 'Target 2', 'concluida' => false, 'prioridade' => 'alta']);
+    $this->createTarefaForSession(['titulo' => 'Target', 'concluida' => false, 'prioridade' => 'alta']);
+    $this->createTarefaForSession(['titulo' => 'Não Target 1', 'concluida' => true, 'prioridade' => 'alta']);
+    $this->createTarefaForSession(['titulo' => 'Não Target 2', 'concluida' => false, 'prioridade' => 'media']);
+    $this->createTarefaForSession(['titulo' => 'Target 2', 'concluida' => false, 'prioridade' => 'alta']);
 
     $response = $this->getJson('/api/tarefas?estado=pendente&prioridade=alta');
 
@@ -251,7 +252,7 @@ test('pode combinar filtros de estado e prioridade', function () {
 
 test('pode visualizar detalhes de uma tarefa específica', function () {
     // Criar uma tarefa completa
-    $tarefa = Tarefa::create([
+    $tarefa = $this->createTarefaForSession([
         'titulo' => 'Tarefa Detalhada',
         'descricao' => 'Esta é uma descrição completa da tarefa',
         'concluida' => false,
@@ -293,7 +294,7 @@ test('retorna erro 404 para tarefa inexistente', function () {
 });
 
 test('retorna todos os campos necessários nos detalhes da tarefa', function () {
-    $tarefa = Tarefa::create([
+    $tarefa = $this->createTarefaForSession([
         'titulo' => 'Teste Campos',
         'descricao' => 'Descrição teste',
         'concluida' => true,
@@ -325,3 +326,4 @@ test('retorna todos os campos necessários nos detalhes da tarefa', function () 
     expect($tarefaDetalhes['concluida'])->toBeBool();
     expect($tarefaDetalhes['prioridade'])->toBeString();
 });
+

@@ -11,6 +11,9 @@ class TarefaController extends Controller
     {
         $query = Tarefa::query();
 
+        // Isolamento por usuário ou sessão
+        $this->applyUserOrSessionFilter($query, $request);
+
         // Filtro por estado (pendente/concluida)
         if ($request->has('estado')) {
             if ($request->estado === 'pendente') {
@@ -49,24 +52,43 @@ class TarefaController extends Controller
             'prioridade' => 'nullable|in:baixa,media,alta',
         ]);
 
-        $tarefa = Tarefa::create([
+        $data = [
             'titulo' => $request->titulo,
             'descricao' => $request->descricao,
             'data_vencimento' => $request->dataVencimento,
             'prioridade' => $request->prioridade ?? 'media',
             'concluida' => false,
-        ]);
+        ];
+
+        // Associar à sessão ou usuário
+        if ($request->user()) {
+            $data['user_id'] = $request->user()->id;
+        } else {
+            $data['session_id'] = session('test_session_id', session()->getId());
+        }
+
+        $tarefa = Tarefa::create($data);
 
         return response()->json($tarefa, 201);
     }
 
-    public function show(Tarefa $tarefa)
+    public function show(Request $request, Tarefa $tarefa)
     {
+        // Verificar se a tarefa pertence ao usuário atual ou sessão
+        if (!$this->userCanAccessTarefa($request, $tarefa)) {
+            return response()->json(['message' => 'Tarefa não encontrada'], 404);
+        }
+
         return response()->json($tarefa);
     }
 
     public function update(Request $request, Tarefa $tarefa)
     {
+        // Verificar se a tarefa pertence ao usuário atual ou sessão
+        if (!$this->userCanAccessTarefa($request, $tarefa)) {
+            return response()->json(['message' => 'Tarefa não encontrada'], 404);
+        }
+
         $request->validate([
             'titulo' => 'sometimes|required|string|max:255',
             'descricao' => 'nullable|string',
@@ -85,15 +107,55 @@ class TarefaController extends Controller
         return response()->json($tarefa);
     }
 
-    public function destroy(Tarefa $tarefa)
+    public function destroy(Request $request, Tarefa $tarefa)
     {
+        // Verificar se a tarefa pertence ao usuário atual ou sessão
+        if (!$this->userCanAccessTarefa($request, $tarefa)) {
+            return response()->json(['message' => 'Tarefa não encontrada'], 404);
+        }
+
         $tarefa->delete();
         return response()->json(['message' => 'Tarefa excluída com sucesso']);
     }
 
-    public function toggleComplete(Tarefa $tarefa)
+    public function toggleComplete(Request $request, Tarefa $tarefa)
     {
+        // Verificar se a tarefa pertence ao usuário atual ou sessão
+        if (!$this->userCanAccessTarefa($request, $tarefa)) {
+            return response()->json(['message' => 'Tarefa não encontrada'], 404);
+        }
+
         $tarefa->update(['concluida' => !$tarefa->concluida]);
         return response()->json($tarefa);
+    }
+
+    /**
+     * Aplicar filtro de usuário ou sessão nas consultas
+     */
+    private function applyUserOrSessionFilter($query, Request $request)
+    {
+        if ($request->user()) {
+            // Usuário autenticado: mostrar apenas suas tarefas
+            $query->where('user_id', $request->user()->id);
+        } else {
+            // Usuário não autenticado: usar sessão
+            $sessionId = session('test_session_id', session()->getId());
+            $query->where('session_id', $sessionId);
+        }
+    }
+
+    /**
+     * Verificar se o usuário pode acessar a tarefa
+     */
+    private function userCanAccessTarefa(Request $request, Tarefa $tarefa)
+    {
+        if ($request->user()) {
+            // Usuário autenticado: verificar se é dono da tarefa
+            return $tarefa->user_id == $request->user()->id;
+        } else {
+            // Usuário não autenticado: verificar sessão
+            $sessionId = session('test_session_id', session()->getId());
+            return $tarefa->session_id == $sessionId;
+        }
     }
 }

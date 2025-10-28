@@ -106,7 +106,48 @@ pest()->extend(Tests\TestCase::class)
 
 Isso garante que o banco seja limpo entre cada teste.
 
-## 📝 Detalhamento dos Testes por Categoria
+## � Sistema de Autenticação nos Testes
+
+### Simulação de Sessões
+
+O projeto implementa um sistema dual de autenticação (usuários + sessões). Para os testes, foi criado um sistema de simulação de sessões na classe `TestCase`:
+
+```php
+protected function createTarefaForSession(array $attributes = []): Tarefa
+{
+    return Tarefa::create(array_merge([
+        'titulo' => 'Tarefa de Teste',
+        'session_id' => session()->getId(),
+        'user_id' => null
+    ], $attributes));
+}
+
+protected function createTarefaForUser(User $user, array $attributes = []): Tarefa
+{
+    return Tarefa::create(array_merge([
+        'titulo' => 'Tarefa de Teste',
+        'user_id' => $user->id,
+        'session_id' => null
+    ], $attributes));
+}
+```
+
+### Isolamento de Dados
+
+- **Cada teste** executa em uma sessão isolada
+- **Tarefas criadas** são automaticamente associadas à sessão do teste
+- **Isolamento garantido** entre diferentes execuções de teste
+- **Limpeza automática** do banco entre testes via `RefreshDatabase`
+
+### Cobertura de Autenticação
+
+- ✅ Isolamento por sessão (50 testes)
+- ✅ Criação com associação automática à sessão
+- ✅ Filtros respeitam isolamento de sessão
+- ✅ Operações CRUD isoladas por sessão
+- ⚠️ Testes de autenticação de usuários (em desenvolvimento)
+
+## �📝 Detalhamento dos Testes por Categoria
 
 ### 1. Testes de Criação (CriarTest.php)
 

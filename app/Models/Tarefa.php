@@ -11,11 +11,21 @@ class Tarefa extends Model
         'descricao',
         'concluida',
         'data_vencimento',
-        'prioridade'
+        'prioridade',
+        'user_id',
+        'session_id'
     ];
 
     protected $casts = [
         'concluida' => 'boolean',
         'data_vencimento' => 'date',
     ];
+
+    /**
+     * Relacionamento com o usuário
+     */
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }

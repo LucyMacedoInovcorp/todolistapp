@@ -12,7 +12,7 @@ use App\Models\Tarefa;
 
 test('usuário pode editar título de uma tarefa existente', function () {
     // Arrange - Criar tarefa original
-    $tarefa = Tarefa::create([
+    $tarefa = $this->createTarefaForSession([
         'titulo' => 'Título Original',
         'descricao' => 'Descrição original',
         'prioridade' => 'media',
@@ -43,7 +43,7 @@ test('usuário pode editar título de uma tarefa existente', function () {
 
 test('usuário pode editar descrição de uma tarefa existente', function () {
     // Arrange
-    $tarefa = Tarefa::create([
+    $tarefa = $this->createTarefaForSession([
         'titulo' => 'Título Fixo',
         'descricao' => 'Descrição original',
         'prioridade' => 'alta'
@@ -70,7 +70,7 @@ test('usuário pode editar descrição de uma tarefa existente', function () {
 
 test('usuário pode editar data de vencimento de uma tarefa existente', function () {
     // Arrange
-    $tarefa = Tarefa::create([
+    $tarefa = $this->createTarefaForSession([
         'titulo' => 'Tarefa com prazo',
         'descricao' => 'Descrição fixa',
         'data_vencimento' => '2025-12-01',
@@ -95,7 +95,7 @@ test('usuário pode editar data de vencimento de uma tarefa existente', function
 
 test('usuário pode editar prioridade de uma tarefa existente', function () {
     // Arrange
-    $tarefa = Tarefa::create([
+    $tarefa = $this->createTarefaForSession([
         'titulo' => 'Tarefa importante',
         'descricao' => 'Descrição fixa',
         'prioridade' => 'baixa'
@@ -123,7 +123,7 @@ test('usuário pode editar prioridade de uma tarefa existente', function () {
 
 test('usuário pode editar todos os campos de uma tarefa ao mesmo tempo', function () {
     // Arrange - Criar tarefa original
-    $tarefa = Tarefa::create([
+    $tarefa = $this->createTarefaForSession([
         'titulo' => 'Título Original',
         'descricao' => 'Descrição original',
         'data_vencimento' => '2025-11-01',
@@ -162,7 +162,7 @@ test('usuário pode editar todos os campos de uma tarefa ao mesmo tempo', functi
 // ========== TESTES DE VALIDAÇÃO ==========
 
 test('título é obrigatório ao editar tarefa', function () {
-    $tarefa = Tarefa::create([
+    $tarefa = $this->createTarefaForSession([
         'titulo' => 'Título Original',
         'descricao' => 'Descrição'
     ]);
@@ -185,7 +185,7 @@ test('título é obrigatório ao editar tarefa', function () {
 });
 
 test('prioridade deve ser válida ao editar', function () {
-    $tarefa = Tarefa::create([
+    $tarefa = $this->createTarefaForSession([
         'titulo' => 'Tarefa Teste',
         'prioridade' => 'media'
     ]);
@@ -206,7 +206,7 @@ test('prioridade deve ser válida ao editar', function () {
 });
 
 test('data de vencimento deve ser válida ao editar', function () {
-    $tarefa = Tarefa::create([
+    $tarefa = $this->createTarefaForSession([
         'titulo' => 'Tarefa com Data',
         'data_vencimento' => '2025-12-01'
     ]);
@@ -225,7 +225,7 @@ test('data de vencimento deve ser válida ao editar', function () {
 // ========== TESTES DE CASOS ESPECIAIS ==========
 
 test('pode remover descrição de uma tarefa (tornar null)', function () {
-    $tarefa = Tarefa::create([
+    $tarefa = $this->createTarefaForSession([
         'titulo' => 'Tarefa com Descrição',
         'descricao' => 'Esta tarefa tinha descrição'
     ]);
@@ -247,7 +247,7 @@ test('pode remover descrição de uma tarefa (tornar null)', function () {
 });
 
 test('pode remover data de vencimento de uma tarefa', function () {
-    $tarefa = Tarefa::create([
+    $tarefa = $this->createTarefaForSession([
         'titulo' => 'Tarefa com Prazo',
         'data_vencimento' => '2025-12-01'
     ]);
@@ -277,7 +277,7 @@ test('retorna erro 404 ao tentar editar tarefa inexistente', function () {
 
 test('edição preserva campos não enviados', function () {
     // Criar tarefa com todos os campos preenchidos
-    $tarefa = Tarefa::create([
+    $tarefa = $this->createTarefaForSession([
         'titulo' => 'Título Original',
         'descricao' => 'Descrição Original',
         'data_vencimento' => '2025-11-15',
@@ -302,3 +302,4 @@ test('edição preserva campos não enviados', function () {
     expect($tarefaAtualizada->prioridade)->toBe('media'); // Preservado
     expect($tarefaAtualizada->concluida)->toBeTrue(); // Preservado
 });
+

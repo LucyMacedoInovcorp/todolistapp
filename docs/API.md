@@ -4,10 +4,136 @@
 
 - **Base URL**: `https://todolistapp-main-sawgdc.laravel.cloud/api`
 - **Formato**: JSON
-- **Autenticação**: Não requerida (para esta versão)
+- **Autenticação**: Opcional - funciona com e sem login
 - **Content-Type**: `application/json`
 
-## 📋 Endpoints das Tarefas
+## 🔐 Sistema de Autenticação
+
+A API funciona de **duas maneiras**:
+
+### 📱 **Usuários Não Autenticados (Sessão)**
+- Tarefas isoladas por sessão do navegador
+- Dados temporários (perdidos ao limpar navegador)
+- Não requer cadastro ou login
+
+### 👤 **Usuários Autenticados (Conta)**
+- Tarefas salvas permanentemente no banco
+- Acesso de qualquer dispositivo
+- Isolamento total por usuário
+
+### 🔑 **Autenticação por Token**
+Para usar com autenticação, inclua o header:
+```http
+Authorization: Bearer {seu-token-aqui}
+```
+
+## � Endpoints de Autenticação
+
+### 1. Registrar Usuário
+
+```http
+POST /api/register
+```
+
+Cria uma nova conta de usuário.
+
+**Body (JSON):**
+```json
+{
+  "name": "João Silva",
+  "email": "joao@email.com", 
+  "password": "minimo8chars",
+  "password_confirmation": "minimo8chars"
+}
+```
+
+**Resposta de Sucesso (201):**
+```json
+{
+  "user": {
+    "id": 1,
+    "name": "João Silva",
+    "email": "joao@email.com"
+  },
+  "token": "1|abc123...",
+  "message": "Usuário registrado com sucesso!"
+}
+```
+
+### 2. Fazer Login
+
+```http
+POST /api/login
+```
+
+Autentica um usuário existente.
+
+**Body (JSON):**
+```json
+{
+  "email": "joao@email.com",
+  "password": "minimo8chars"
+}
+```
+
+**Resposta de Sucesso (200):**
+```json
+{
+  "user": {
+    "id": 1,
+    "name": "João Silva", 
+    "email": "joao@email.com"
+  },
+  "token": "1|xyz789...",
+  "message": "Login realizado com sucesso!"
+}
+```
+
+### 3. Logout
+
+```http
+POST /api/logout
+```
+
+**Headers:**
+```http
+Authorization: Bearer {token}
+```
+
+**Resposta de Sucesso (200):**
+```json
+{
+  "message": "Logout realizado com sucesso!"
+}
+```
+
+### 4. Dados do Usuário
+
+```http
+GET /api/user
+```
+
+**Headers:**
+```http
+Authorization: Bearer {token}
+```
+
+**Resposta de Sucesso (200):**
+```json
+{
+  "user": {
+    "id": 1,
+    "name": "João Silva",
+    "email": "joao@email.com"
+  }
+}
+```
+
+##  Endpoints das Tarefas
+
+> **💡 Importante:** Todos os endpoints de tarefas funcionam automaticamente com isolamento:
+> - **Com token:** Mostra apenas tarefas do usuário autenticado
+> - **Sem token:** Mostra apenas tarefas da sessão atual
 
 ### 1. Listar Tarefas
 
@@ -29,17 +155,28 @@ Lista todas as tarefas com opções de filtro.
 #### Exemplos de Requisição
 
 ```bash
-# Listar todas as tarefas
-curl -X GET "https://todolistapp-main-sawgdc.laravel.cloud/api/tarefas"
+# Listar tarefas da sessão (sem token)
+curl -X GET "https://todolistapp-main-sawgdc.laravel.cloud/api/tarefas" \
+  -H "Accept: application/json"
 
-# Filtrar tarefas pendentes de alta prioridade
-curl -X GET "https://todolistapp-main-sawgdc.laravel.cloud/api/tarefas?estado=pendente&prioridade=alta"
+# Listar tarefas do usuário autenticado (com token)
+curl -X GET "https://todolistapp-main-sawgdc.laravel.cloud/api/tarefas" \
+  -H "Accept: application/json" \
+  -H "Authorization: Bearer 1|xyz789..."
 
-# Filtrar tarefas por data de vencimento
-curl -X GET "https://todolistapp-main-sawgdc.laravel.cloud/api/tarefas?data_vencimento=2025-10-25"
+# Filtrar tarefas pendentes de alta prioridade (com token)
+curl -X GET "https://todolistapp-main-sawgdc.laravel.cloud/api/tarefas?estado=pendente&prioridade=alta" \
+  -H "Accept: application/json" \
+  -H "Authorization: Bearer 1|xyz789..."
 
-# Listar tarefas vencidas
-curl -X GET "https://todolistapp-main-sawgdc.laravel.cloud/api/tarefas?vencidas=true"
+# Filtrar tarefas por data de vencimento (sem token)
+curl -X GET "https://todolistapp-main-sawgdc.laravel.cloud/api/tarefas?data_vencimento=2025-10-25" \
+  -H "Accept: application/json"
+
+# Listar tarefas vencidas (com token)
+curl -X GET "https://todolistapp-main-sawgdc.laravel.cloud/api/tarefas?vencidas=true" \
+  -H "Accept: application/json" \
+  -H "Authorization: Bearer 1|xyz789..."
 ```
 
 #### Resposta de Sucesso (200)
@@ -93,11 +230,25 @@ Cria uma nova tarefa.
 #### Exemplo de Requisição
 
 ```bash
+# Criar tarefa da sessão (sem token)
 curl -X POST "https://todolistapp-main-sawgdc.laravel.cloud/api/tarefas" \
   -H "Content-Type: application/json" \
+  -H "Accept: application/json" \
   -d '{
     "titulo": "Nova tarefa",
     "descricao": "Descrição da nova tarefa",
+    "dataVencimento": "2025-10-30",
+    "prioridade": "alta"
+  }'
+
+# Criar tarefa do usuário (com token)
+curl -X POST "https://todolistapp-main-sawgdc.laravel.cloud/api/tarefas" \
+  -H "Content-Type: application/json" \
+  -H "Accept: application/json" \
+  -H "Authorization: Bearer 1|xyz789..." \
+  -d '{
+    "titulo": "Tarefa do usuário",
+    "descricao": "Tarefa vinculada ao usuário autenticado",
     "dataVencimento": "2025-10-30",
     "prioridade": "alta"
   }'
@@ -153,7 +304,14 @@ Retorna os detalhes de uma tarefa específica.
 #### Exemplo de Requisição
 
 ```bash
-curl -X GET "https://todolistapp-main-sawgdc.laravel.cloud/api/tarefas/1"
+# Visualizar tarefa da sessão (sem token)
+curl -X GET "https://todolistapp-main-sawgdc.laravel.cloud/api/tarefas/1" \
+  -H "Accept: application/json"
+
+# Visualizar tarefa do usuário (com token)
+curl -X GET "https://todolistapp-main-sawgdc.laravel.cloud/api/tarefas/1" \
+  -H "Accept: application/json" \
+  -H "Authorization: Bearer 1|xyz789..."
 ```
 
 #### Resposta de Sucesso (200)
@@ -210,8 +368,21 @@ Atualiza uma tarefa existente.
 #### Exemplo de Requisição
 
 ```bash
+# Editar tarefa da sessão (sem token)
 curl -X PUT "https://todolistapp-main-sawgdc.laravel.cloud/api/tarefas/1" \
   -H "Content-Type: application/json" \
+  -H "Accept: application/json" \
+  -d '{
+    "titulo": "Estudar Laravel Avançado",
+    "descricao": "Focar em relacionamentos e migrações",
+    "prioridade": "alta"
+  }'
+
+# Editar tarefa do usuário (com token)
+curl -X PUT "https://todolistapp-main-sawgdc.laravel.cloud/api/tarefas/1" \
+  -H "Content-Type: application/json" \
+  -H "Accept: application/json" \
+  -H "Authorization: Bearer 1|xyz789..." \
   -d '{
     "titulo": "Estudar Laravel Avançado",
     "descricao": "Focar em relacionamentos e migrações",
@@ -253,7 +424,14 @@ Alterna o status da tarefa entre concluída e pendente.
 #### Exemplo de Requisição
 
 ```bash
-curl -X PATCH "https://todolistapp-main-sawgdc.laravel.cloud/api/tarefas/1/toggle"
+# Alternar status da tarefa da sessão (sem token)
+curl -X PATCH "https://todolistapp-main-sawgdc.laravel.cloud/api/tarefas/1/toggle" \
+  -H "Accept: application/json"
+
+# Alternar status da tarefa do usuário (com token)
+curl -X PATCH "https://todolistapp-main-sawgdc.laravel.cloud/api/tarefas/1/toggle" \
+  -H "Accept: application/json" \
+  -H "Authorization: Bearer 1|xyz789..."
 ```
 
 #### Resposta de Sucesso (200)
@@ -290,7 +468,14 @@ Remove uma tarefa permanentemente.
 #### Exemplo de Requisição
 
 ```bash
-curl -X DELETE "https://todolistapp-main-sawgdc.laravel.cloud/api/tarefas/1"
+# Excluir tarefa da sessão (sem token)
+curl -X DELETE "https://todolistapp-main-sawgdc.laravel.cloud/api/tarefas/1" \
+  -H "Accept: application/json"
+
+# Excluir tarefa do usuário (com token)
+curl -X DELETE "https://todolistapp-main-sawgdc.laravel.cloud/api/tarefas/1" \
+  -H "Accept: application/json" \
+  -H "Authorization: Bearer 1|xyz789..."
 ```
 
 #### Resposta de Sucesso (200)
@@ -308,8 +493,9 @@ curl -X DELETE "https://todolistapp-main-sawgdc.laravel.cloud/api/tarefas/1"
 | Código | Significado | Quando Ocorre |
 |--------|-------------|---------------|
 | `200` | OK | Operação realizada com sucesso |
-| `201` | Created | Tarefa criada com sucesso |
-| `404` | Not Found | Tarefa não encontrada |
+| `201` | Created | Tarefa ou usuário criado com sucesso |
+| `401` | Unauthorized | Token inválido ou expirado |
+| `404` | Not Found | Tarefa não encontrada ou credenciais inválidas (login) |
 | `422` | Unprocessable Entity | Dados de entrada inválidos |
 | `405` | Method Not Allowed | Método HTTP não permitido para o endpoint |
 
@@ -365,12 +551,48 @@ curl -X GET "https://todolistapp-main-sawgdc.laravel.cloud/api/tarefas/1"
 ### Cenários Comuns de Filtros
 
 ```bash
-# Listar tarefas vencidas não concluídas
-curl -X GET "https://todolistapp-main-sawgdc.laravel.cloud/api/tarefas?vencidas=true"
+# Listar tarefas vencidas não concluídas (com token)
+curl -X GET "https://todolistapp-main-sawgdc.laravel.cloud/api/tarefas?vencidas=true" \
+  -H "Accept: application/json" \
+  -H "Authorization: Bearer 1|xyz789..."
 
-# Tarefas de hoje
-curl -X GET "https://todolistapp-main-sawgdc.laravel.cloud/api/tarefas?data_vencimento=2025-10-21"
+# Tarefas de hoje (sem token - da sessão)
+curl -X GET "https://todolistapp-main-sawgdc.laravel.cloud/api/tarefas?data_vencimento=2025-10-21" \
+  -H "Accept: application/json"
 
-# Tarefas concluídas de prioridade baixa
-curl -X GET "https://todolistapp-main-sawgdc.laravel.cloud/api/tarefas?estado=concluida&prioridade=baixa"
+# Tarefas concluídas de prioridade baixa (com token)
+curl -X GET "https://todolistapp-main-sawgdc.laravel.cloud/api/tarefas?estado=concluida&prioridade=baixa" \
+  -H "Accept: application/json" \
+  -H "Authorization: Bearer 1|xyz789..."
 ```
+
+---
+
+## 🔐 Considerações Importantes sobre Autenticação
+
+### Isolamento Automático de Dados
+
+A API implementa **isolamento automático** baseado no contexto da requisição:
+
+- **🔑 Com Token:** Todas as operações são filtradas pelo `user_id` do usuário autenticado
+- **🍪 Sem Token:** Todas as operações são filtradas pela `session_id` atual
+
+### Migração entre Modos
+
+- **Sessão → Usuário:** Ao fazer login, as tarefas da sessão **NÃO** são transferidas automaticamente
+- **Usuário → Sessão:** Ao fazer logout, volta a ver apenas tarefas da sessão
+
+### Tokens de Autenticação
+
+- **Formato:** `Bearer {token}` no header `Authorization`
+- **Validade:** Tokens não expiram automaticamente (persistentes)  
+- **Revogação:** Use o endpoint `/api/logout` para invalidar o token atual
+
+### Comportamento de Erro 404
+
+Quando uma tarefa não é encontrada, pode significar:
+1. A tarefa não existe no banco de dados
+2. A tarefa existe, mas pertence a outro usuário/sessão
+3. Você não tem permissão para acessá-la
+
+Por questões de segurança, a API retorna sempre `404` nesses casos.

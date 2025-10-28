@@ -38,7 +38,14 @@ Uma aplicação web simples e intuitiva para gestão de tarefas (lista "To-Do"),
 - **Remoção Individual**: Exclusão segura de tarefas específicas
 - **Confirmação de Ação**: Proteção contra exclusões acidentais
 
-### 📱 Responsividade Total
+### � Sistema de Autenticação Dual
+- **Contas de Usuário**: Sistema completo de registro, login e logout
+- **Sessões Anônimas**: Uso sem cadastro com isolamento por sessão
+- **Isolamento Automático**: Cada usuário/sessão vê apenas suas próprias tarefas
+- **Tokens API**: Autenticação via Laravel Sanctum para acesso programático
+- **Migração Suave**: Transição entre modos sessão e usuário sem perda de dados
+
+### �📱 Responsividade Total
 - **Design Adaptativo**: Interface otimizada para desktop, tablet e mobile
 - **Mobile First**: Priorizando a experiência em dispositivos móveis
 - **Breakpoints Inteligentes**: Adaptação automática a diferentes tamanhos de ecrã
@@ -50,6 +57,7 @@ Uma aplicação web simples e intuitiva para gestão de tarefas (lista "To-Do"),
 - **Linguagem**: PHP 8.2+ - Performance otimizada e recursos modernos
 - **Base de Dados**: MySQL 8.0+ - Armazenamento eficiente com índices otimizados
 - **ORM**: Eloquent - Gestão elegante de dados e relacionamentos
+- **Autenticação**: Laravel Sanctum - Tokens API seguros e confiáveis
 - **Arquitetura**: Models, Controllers e Migrations organizados
 - **Validação**: Validação de dados no backend para integridade das informações
 - **Testes**: PestPHP - Cobertura completa com testes unitários e de integração

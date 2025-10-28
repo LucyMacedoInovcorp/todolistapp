@@ -21,7 +21,8 @@ Bem-vindo à documentação completa do projeto TodoList API! Aqui você encontr
 Se você vai consumir a API:
 1. Leia o [README](../README.md) para entender o projeto
 2. Siga o [Guia de Instalação](INSTALACAO.md) para rodar localmente
-3. Use a [Documentação da API](API.md) como referência
+3. Use a [Documentação da API](API.md) como referência (inclui autenticação)
+4. Entenda o sistema de autenticação dual (usuários + sessões)
 
 ### 🔧 **Desenvolvedores Backend**
 Se você vai modificar ou contribuir:

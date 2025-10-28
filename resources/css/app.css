@@ -1328,3 +1328,214 @@ select[aria-invalid="false"] {
     line-height: 1.4;
     color: #6B7280;
 }
+
+/* === ESTILOS DE AUTENTICAÇÃO === */
+
+/* Container principal de autenticação */
+.auth-container {
+    min-height: calc(100vh - 120px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    width: 100%;
+}
+
+/* Card do formulário */
+.auth-card {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 20px 40px rgba(102, 126, 234, 0.15);
+    padding: 3rem;
+    max-width: 420px;
+    width: 100%;
+    border: 1px solid rgba(102, 126, 234, 0.1);
+    backdrop-filter: blur(10px);
+}
+
+/* Cabeçalho do formulário */
+.auth-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.auth-header h1 {
+    font-family: 'Playfair Display', serif !important;
+    font-size: 1.8rem;
+    font-weight: 600;
+    color: #2d3748;
+    margin: 0 0 0.5rem 0;
+}
+
+.auth-header p {
+    color: #718096;
+    font-size: 0.95rem;
+    margin: 0;
+}
+
+/* Formulário */
+.auth-form {
+    width: 100%;
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-label {
+    display: block;
+    font-weight: 500;
+    color: #4a5568;
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+    font-family: 'Playfair Display', serif !important;
+}
+
+.form-input {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 2px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    transition: border-color 0.2s ease;
+    background: white;
+    font-family: 'Playfair Display', serif !important;
+    box-sizing: border-box;
+}
+
+.form-input:focus {
+    outline: none;
+    border-color: #87ceeb;
+    box-shadow: 0 0 0 3px rgba(135, 206, 235, 0.2);
+}
+
+.form-input::placeholder {
+    color: #a0aec0;
+}
+
+/* Botões de autenticação */
+.auth-button {
+    width: 100%;
+    padding: 0.875rem 1.5rem;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    font-family: 'Playfair Display', serif !important;
+}
+
+.auth-button-primary {
+    background: linear-gradient(135deg, #a8d0f0 0%, #87ceeb 100%);
+    color: #2d3748;
+}
+
+.auth-button-primary:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: 0 8px 25px rgba(168, 208, 240, 0.4);
+}
+
+.auth-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none !important;
+}
+
+/* Links de autenticação */
+.auth-links {
+    text-align: center;
+    margin-top: 1.5rem;
+}
+
+.auth-links p {
+    margin: 0.5rem 0;
+    font-size: 0.9rem;
+    color: #718096;
+}
+
+.auth-link {
+    color: #5a9fd4;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.2s ease;
+}
+
+.auth-link:hover {
+    color: #4682b4;
+    text-decoration: underline;
+}
+
+/* Nota informativa */
+.auth-note {
+    background: #f7fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 1rem;
+    margin-top: 1.5rem;
+    font-size: 0.85rem;
+}
+
+.auth-note p {
+    margin: 0 0 0.5rem 0;
+    font-weight: 600;
+    color: #4a5568;
+}
+
+.auth-note ul {
+    margin: 0;
+    padding-left: 1.5rem;
+    color: #718096;
+}
+
+.auth-note li {
+    margin-bottom: 0.25rem;
+}
+
+/* Mensagens de erro e sucesso */
+.error-message {
+    color: #e53e3e;
+    font-size: 0.8rem;
+    margin-top: 0.25rem;
+    display: none;
+}
+
+.success-message {
+    color: #38a169;
+    font-size: 0.9rem;
+    text-align: center;
+    padding: 0.75rem;
+    background: #f0fff4;
+    border: 1px solid #9ae6b4;
+    border-radius: 8px;
+    margin-top: 1rem;
+}
+
+/* Loading spinner */
+.loading-spinner {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* Responsividade para autenticação */
+@media (max-width: 480px) {
+    .auth-container {
+        padding: 1rem;
+    }
+    
+    .auth-card {
+        padding: 2rem 1.5rem;
+    }
+    
+    .auth-header h1 {
+        font-size: 1.5rem;
+    }
+}

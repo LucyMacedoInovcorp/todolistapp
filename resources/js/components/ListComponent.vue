@@ -323,7 +323,17 @@ export default {
     methods: {
         async carregarTarefas() {
             try {
-                const response = await fetch('/api/tarefas');
+                const headers = {
+                    'Content-Type': 'application/json'
+                };
+                
+                // Adicionar token se disponível
+                const token = window.getAuthToken && window.getAuthToken();
+                if (token) {
+                    headers['Authorization'] = `Bearer ${token}`;
+                }
+                
+                const response = await fetch('/api/tarefas', { headers });
                 this.tarefas = await response.json();
             } catch (error) {
                 console.error('Erro ao carregar tarefas:', error);
@@ -339,12 +349,20 @@ export default {
             }
 
             try {
+                const headers = {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                };
+                
+                // Adicionar token se disponível
+                const token = window.getAuthToken && window.getAuthToken();
+                if (token) {
+                    headers['Authorization'] = `Bearer ${token}`;
+                }
+                
                 const response = await fetch('/api/tarefas', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-                    },
+                    headers,
                     body: JSON.stringify({
                         titulo: this.novaTarefa.titulo,
                         descricao: this.novaTarefa.descricao,
@@ -367,12 +385,20 @@ export default {
 
         async toggleTarefa(id) {
             try {
+                const headers = {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                };
+                
+                // Adicionar token se disponível
+                const token = window.getAuthToken && window.getAuthToken();
+                if (token) {
+                    headers['Authorization'] = `Bearer ${token}`;
+                }
+                
                 const response = await fetch(`/api/tarefas/${id}/toggle`, {
                     method: 'PATCH',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-                    }
+                    headers
                 });
 
                 if (response.ok) {
@@ -410,12 +436,20 @@ export default {
 
         async salvarEdicao(tarefa) {
             try {
+                const headers = {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                };
+                
+                // Adicionar token se disponível
+                const token = window.getAuthToken && window.getAuthToken();
+                if (token) {
+                    headers['Authorization'] = `Bearer ${token}`;
+                }
+                
                 const response = await fetch(`/api/tarefas/${tarefa.id}`, {
                     method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-                    },
+                    headers,
                     body: JSON.stringify({
                         titulo: tarefa.tituloTemp,
                         descricao: tarefa.descricaoTemp,
@@ -442,11 +476,19 @@ export default {
             if (!confirm('Tem certeza que deseja excluir esta tarefa?')) return;
 
             try {
+                const headers = {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                };
+                
+                // Adicionar token se disponível
+                const token = window.getAuthToken && window.getAuthToken();
+                if (token) {
+                    headers['Authorization'] = `Bearer ${token}`;
+                }
+                
                 const response = await fetch(`/api/tarefas/${id}`, {
                     method: 'DELETE',
-                    headers: {
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-                    }
+                    headers
                 });
 
                 if (response.ok) {

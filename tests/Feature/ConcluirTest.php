@@ -12,7 +12,7 @@ use App\Models\Tarefa;
 
 test('usuário pode marcar tarefa pendente como concluída', function () {
     // Arrange - Criar tarefa pendente
-    $tarefa = Tarefa::create([
+    $tarefa = $this->createTarefaForSession([
         'titulo' => 'Tarefa a ser concluída',
         'descricao' => 'Esta tarefa precisa ser finalizada',
         'concluida' => false,
@@ -40,7 +40,7 @@ test('usuário pode marcar tarefa pendente como concluída', function () {
 
 test('usuário pode marcar tarefa como concluída usando PUT', function () {
     // Arrange - Criar tarefa pendente
-    $tarefa = Tarefa::create([
+    $tarefa = $this->createTarefaForSession([
         'titulo' => 'Tarefa via PUT',
         'concluida' => false
     ]);
@@ -66,7 +66,7 @@ test('usuário pode marcar tarefa como concluída usando PUT', function () {
 // ========== TESTES DE TOGGLE (ALTERNAR ESTADO) ==========
 
 test('toggle alterna estado de pendente para concluída', function () {
-    $tarefa = Tarefa::create([
+    $tarefa = $this->createTarefaForSession([
         'titulo' => 'Tarefa para toggle',
         'concluida' => false
     ]);
@@ -82,7 +82,7 @@ test('toggle alterna estado de pendente para concluída', function () {
 });
 
 test('toggle alterna estado de concluída para pendente', function () {
-    $tarefa = Tarefa::create([
+    $tarefa = $this->createTarefaForSession([
         'titulo' => 'Tarefa já concluída',
         'concluida' => true
     ]);
@@ -98,7 +98,7 @@ test('toggle alterna estado de concluída para pendente', function () {
 });
 
 test('múltiplos toggles alternam corretamente o estado', function () {
-    $tarefa = Tarefa::create([
+    $tarefa = $this->createTarefaForSession([
         'titulo' => 'Tarefa para múltiplos toggles',
         'concluida' => false
     ]);
@@ -123,7 +123,7 @@ test('múltiplos toggles alternam corretamente o estado', function () {
 // ========== TESTES DE PRESERVAÇÃO DE DADOS ==========
 
 test('marcar como concluída preserva outros campos da tarefa', function () {
-    $tarefa = Tarefa::create([
+    $tarefa = $this->createTarefaForSession([
         'titulo' => 'Tarefa Completa',
         'descricao' => 'Descrição detalhada',
         'data_vencimento' => '2025-12-31',
@@ -148,7 +148,7 @@ test('marcar como concluída preserva outros campos da tarefa', function () {
 // ========== TESTES DE CASOS ESPECIAIS ==========
 
 test('pode marcar tarefa sem descrição como concluída', function () {
-    $tarefa = Tarefa::create([
+    $tarefa = $this->createTarefaForSession([
         'titulo' => 'Tarefa sem descrição',
         'descricao' => null,
         'concluida' => false
@@ -165,7 +165,7 @@ test('pode marcar tarefa sem descrição como concluída', function () {
 });
 
 test('pode marcar tarefa sem data de vencimento como concluída', function () {
-    $tarefa = Tarefa::create([
+    $tarefa = $this->createTarefaForSession([
         'titulo' => 'Tarefa sem prazo',
         'data_vencimento' => null,
         'concluida' => false
@@ -182,7 +182,7 @@ test('pode marcar tarefa sem data de vencimento como concluída', function () {
 });
 
 test('pode marcar tarefa vencida como concluída', function () {
-    $tarefa = Tarefa::create([
+    $tarefa = $this->createTarefaForSession([
         'titulo' => 'Tarefa vencida',
         'data_vencimento' => '2025-01-01', // Data no passado
         'concluida' => false
@@ -210,12 +210,12 @@ test('retorna erro 404 ao tentar marcar tarefa inexistente como concluída', fun
 
 test('tarefas concluídas aparecem no filtro correto', function () {
     // Criar tarefas mistas
-    $tarefaPendente = Tarefa::create([
+    $tarefaPendente = $this->createTarefaForSession([
         'titulo' => 'Tarefa Pendente',
         'concluida' => false
     ]);
 
-    $tarefaConcluida = Tarefa::create([
+    $tarefaConcluida = $this->createTarefaForSession([
         'titulo' => 'Tarefa Concluída',
         'concluida' => true
     ]);
@@ -237,7 +237,7 @@ test('tarefas concluídas aparecem no filtro correto', function () {
 
 test('tarefas recém-marcadas como pendentes aparecem no filtro pendente', function () {
     // Criar tarefa concluída
-    $tarefa = Tarefa::create([
+    $tarefa = $this->createTarefaForSession([
         'titulo' => 'Era concluída',
         'concluida' => true
     ]);
@@ -298,3 +298,4 @@ test('tarefas recém-marcadas como pendentes aparecem no filtro pendente', funct
     $encontrada = collect($tarefas)->contains('id', $tarefaCriada['id']);
     expect($encontrada)->toBeTrue();
 });
+
